@@ -9,12 +9,12 @@
 
 #include "SnoozeDigital.h"
 
-#define DR    0
+#define DRZ   0
 #define GDIR  1
 #define PSR   2
 #define ICR1  3
 #define ICR2  4
-#define IMR   5
+#define IMRZ  5
 #define ISR   6
 #define EDGE  7
 
@@ -402,7 +402,7 @@ void SnoozeDigital::clearIsrFlags( uint32_t ipsr ) {
                     break;
             }
         }
-        uint32_t status = gpio[ISR] & gpio[IMR];
+        uint32_t status = gpio[ISR] & gpio[IMRZ];
         if ( status ) {
             gpio[ISR] = status;
         }
@@ -450,7 +450,7 @@ void SnoozeDigital::attachDigitalInterrupt( uint8_t pin, int type ) {
         default: return;
     }
     // TODO: global interrupt disable to protect these read-modify-write accesses?
-    gpio[IMR] &= ~mask;    // disable interrupt
+    gpio[IMRZ] &= ~mask;    // disable interrupt
     *mux = 5;               // pin is GPIO
     gpio[GDIR] &= ~mask;    // pin to input mode
     uint32_t index = __builtin_ctz( mask );
@@ -467,7 +467,7 @@ void SnoozeDigital::attachDigitalInterrupt( uint8_t pin, int type ) {
         }
     }
     gpio[ISR] = mask;  // clear any prior pending interrupt
-    gpio[IMR] |= mask; // enable interrupt
+    gpio[IMRZ] |= mask; // enable interrupt
 
 }
 
@@ -498,6 +498,6 @@ void SnoozeDigital::detachDigitalInterrupt( uint8_t pin ) {
         }
     }
     uint32_t mask = digitalPinToBitMask( pin );
-    gpio[IMR] &= ~mask;
+    gpio[IMRZ] &= ~mask;
 }
 #endif /* __IMXRT1062__ */
